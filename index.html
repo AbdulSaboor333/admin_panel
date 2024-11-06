@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Admin Panel</title>
+    <!-- Link to Bootstrap CSS for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Link to FontAwesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Link to Chart.js for creating charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* General styles for the body */
+        body {
+            margin: 0; /* Remove default margin */
+            padding: 0; /* Remove default padding */
+            font-family: 'Arial', sans-serif; /* Set font family */
+        }
+        /* Navbar styles */
+        .navbar {
+            background-color: #343a40; /* Dark background color for the navbar */
+            color: white; /* White text color */
+        }
+        /* Offcanvas sidebar width */
+        .offcanvas-start {
+            width: 250px; /* Set width of sidebar */
+        }
+        /* Footer styles */
+        footer {
+            background-color: #343a40; /* Dark background color for the footer */
+            color: white; /* White text color */
+            text-align: center; /* Center the text */
+            padding: 10px; /* Padding around the footer */
+            position: fixed; /* Fixed position at the bottom */
+            bottom: 0; /* Align to the bottom */
+            width: 100%; /* Full width */
+        }
+        /* Styles for sidebar links */
+        .sidebar-link {
+            padding: 15px; /* Padding inside sidebar links */
+            text-decoration: none; /* Remove underline from links */
+            font-size: 18px; /* Font size for links */
+            color: white; /* White text color */
+            display: block; /* Block display for full width */
+        }
+        /* Hover effect for sidebar links */
+        .sidebar-link:hover {
+            background-color: #575d63; /* Change background on hover */
+        }
+        /* Padding for offcanvas body */
+        .offcanvas-body {
+            padding-top: 20px; /* Padding at the top */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar (includes button to toggle sidebar on mobile) -->
+    <nav class="navbar navbar-dark navbar-expand-lg">
+        <div class="container-fluid">
+            <!-- Button to open sidebar -->
+            <button class="btn btn-outline-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
+                <i class="fas fa-bars"></i> <!-- Hamburger icon -->
+            </button>
+            <span class="navbar-brand mb-0 h1 ms-3">Admin Panel</span>
+            <form class="d-flex ms-auto">
+                <!-- Search input -->
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <!-- Search button -->
+                <button class="btn btn-outline-light" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Offcanvas Sidebar -->
+    <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="sidebarLabel">Admin Menu</h5>
+            <!-- Close button for the sidebar -->
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <!-- Sidebar links -->
+            <a href="#dashboard" class="sidebar-link"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="#users" class="sidebar-link"><i class="fas fa-users"></i> Users</a>
+            <a href="#settings" class="sidebar-link"><i class="fas fa-cogs"></i> Settings</a>
+            <a href="#reports" class="sidebar-link"><i class="fas fa-chart-line"></i> Reports</a>
+            <a href="#notifications" class="sidebar-link" data-bs-toggle="collapse" data-bs-target="#notifMenu"><i class="fas fa-bell"></i> Notifications <span class="badge bg-danger">3</span></a>
+            <!-- Collapsible notifications menu -->
+            <div id="notifMenu" class="collapse">
+                <a href="#notif1" class="sidebar-link ps-4">New User Registered</a>
+                <a href="#notif2" class="sidebar-link ps-4">System Update</a>
+                <a href="#notif3" class="sidebar-link ps-4">Pending Requests</a>
+            </div>
+            <a href="#logout" class="sidebar-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Dashboard Cards -->
+            <div class="col-md-3">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Users</h5>
+                        <p class="card-text">1500</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Active Users</h5>
+                        <p class="card-text">1200</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-warning mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Pending Requests</h5>
+                        <p class="card-text">80</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-danger mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Reports</h5>
+                        <p class="card-text">35</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart.js Integration -->
+        <div class="row mt-5">
+            <div class="col-md-6">
+                <h4>Users Growth</h4>
+                <canvas id="usersChart"></canvas> <!-- Canvas for the users growth chart -->
+            </div>
+            <div class="col-md-6">
+                <h4>Active Users per Month</h4>
+                <canvas id="activeUsersChart"></canvas> <!-- Canvas for the active users chart -->
+            </div>
+        </div>
+
+        <!-- User Table -->
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <h3>Users List</h3>
+                <!-- Button to open Add User modal -->
+                <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">Add New User</button>
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>John Doe</td>
+                            <td>john@example.com</td>
+                            <td>Active</td>
+                            <td>
+                                <!-- Edit button for user -->
+                                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button>
+                                <!-- Delete button for user -->
+                                <button class="btn btn-danger btn-sm">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td>Jane Doe</td>
+                            <td>jane@example.com</td>
+                            <td>Pending</td>
+                            <td>
+                                <!-- Edit button for user -->
+                                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button>
+                                <!-- Delete button for user -->
+                                <button class="btn btn-danger btn-sm">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Admin Panel. All rights reserved.</p>
+    </footer>
+
+    <!-- Add User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                    <!-- Close button for modal -->
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="userName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="userName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="userEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userStatus" class="form-label">Status</label>
+                            <select class="form-select" id="userStatus">
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <!-- Close button for modal -->
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <!-- Button to submit the form -->
+                    <button type="button" class="btn btn-primary">Add User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                    <!-- Close button for modal -->
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="editUserName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="editUserName" value="Jane Doe" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editUserEmail" value="jane@example.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserStatus" class="form-label">Status</label>
+                            <select class="form-select" id="editUserStatus">
+                                <option value="active" selected>Active</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <!-- Close button for modal -->
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <!-- Button to submit the form -->
+                    <button type="button" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script to initialize Bootstrap JS components -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    
+    <script>
+        // Data for the charts
+        const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Users Growth',
+                backgroundColor: 'rgba(54, 162, 235, 0.5)', // Light blue for the users growth chart
+                borderColor: 'rgba(54, 162, 235, 1)', // Dark blue for the border
+                borderWidth: 1,
+                data: [0, 100, 200, 300, 400, 500, 600], // Sample data for the growth of users
+            }]
+        };
+
+        // Configuration for the chart
+        const config = {
+            type: 'line', // Type of chart (line chart)
+            data: data,
+            options: {
+                responsive: true, // Responsive chart
+                plugins: {
+                    legend: {
+                        position: 'top', // Position of the legend
+                    },
+                    title: {
+                        display: true,
+                        text: 'Users Growth Chart' // Title of the chart
+                    }
+                }
+            }
+        };
+
+        // Create the Users Growth chart
+        const usersChart = new Chart(
+            document.getElementById('usersChart'),
+            config
+        );
+
+        // Active users chart data
+        const activeUsersData = {
+            labels: labels,
+            datasets: [{
+                label: 'Active Users',
+                backgroundColor: 'rgba(75, 192, 192, 0.5)', // Light green for active users
+                borderColor: 'rgba(75, 192, 192, 1)', // Dark green for the border
+                borderWidth: 1,
+                data: [0, 80, 160, 240, 320, 400, 480], // Sample data for active users
+            }]
+        };
+
+        // Configuration for the active users chart
+        const activeUsersConfig = {
+            type: 'bar', // Type of chart (bar chart)
+            data: activeUsersData,
+            options: {
+                responsive: true, // Responsive chart
+                plugins: {
+                    legend: {
+                        position: 'top', // Position of the legend
+                    },
+                    title: {
+                        display: true,
+                        text: 'Active Users Chart' // Title of the chart
+                    }
+                }
+            }
+        };
+
+        // Create the Active Users chart
+        const activeUsersChart = new Chart(
+            document.getElementById('activeUsersChart'),
+            activeUsersConfig
+        );
+    </script>
+</body>
+</html>
